@@ -1,55 +1,71 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report:
+- Version Change: Initial -> 1.0.0
+- Modified Principles: Defined Principles I-VI based on user input.
+- Added Sections: Technology Standards, Development Constraints.
+- Templates requiring updates: ✅ None (Standard templates are compatible).
+-->
+# Evolution of Todo - Phase II: Full-Stack Web Application (Monorepo) Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Monorepo Strictness
+Complete separation of concerns is mandatory. The codebase is divided into discrete services, specifically `frontend/` and `backend/`. These directories must never share code directly (no relative imports across service boundaries). Shared contracts or types must be defined in the specification or a dedicated shared package if architecturally permitted, but direct cross-service coupling is prohibited.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Spec-Driven Authority
+All implementation details, data models, and API contracts must originate from the `specs/` directory (following the Spec-Kit Plus structure). Code is downstream of specification. We do not write code to "explore"; we write code to fulfill a defined spec. Any deviation requires a spec update first.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Stateless Security
+Authentication and authorization must be stateless. The system uses JWTs (JSON Web Tokens) for identity verification. The Backend service verifies tokens but does not manage session state (no server-side sessions). This ensures scalability and strict separation of authentication concerns.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Type Safety
+Strict typing is enforced across the entire stack.
+- **Frontend**: TypeScript is mandatory. `any` types are prohibited unless strictly justified and isolated.
+- **Backend**: Python with Type Hints, Pydantic, and SQLModel is mandatory. Data crossing boundaries must be validated against typed schemas.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Validation & Data Integrity
+Trust no input.
+- **Frontend**: Must validate all user inputs before transmission.
+- **Backend**: Must independently validate all incoming data before processing or persistence.
+- **Persistence**: Data must be persisted in the Neon Serverless PostgreSQL database. Users can only view and edit their own data (strict data isolation).
 
-### [PRINCIPLE_6_NAME]
+### VI. No Magic Strings & Secure Configuration
+Hardcoded secrets, credentials, or configuration URLs are strictly prohibited. All environment-specific configuration (Database URLs, Auth Secrets, API Keys) must be managed via environment variables.
 
+## Technology Standards
 
-[PRINCIPLE__DESCRIPTION]
+### Frontend
+- **Framework**: Next.js 16+ (App Router)
+- **Styling**: Tailwind CSS
+- **Authentication**: Better Auth (Client-side integration)
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### Backend
+- **Framework**: Python FastAPI
+- **ORM**: SQLModel (Pydantic + SQLAlchemy)
+- **Database**: Neon Serverless PostgreSQL
+- **Authentication**: JWT verification via Better Auth plugin/standards
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### API Design
+- **Protocol**: RESTful API standards
+- **Security**: All protected endpoints must utilize Dependency Injection for auth guards.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Development Constraints
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### Directory Structure
+The project must strictly adhere to the Spec-Kit Monorepo layout:
+- `specs/`: Source of truth for requirements and design.
+- `frontend/`: Next.js application.
+- `backend/`: FastAPI application.
+- `.spec-kit/`: Tooling and configuration.
+
+### Database Interaction
+- **No Manual SQL**: All database interactions must be performed using SQLModel. Raw SQL queries are discouraged unless required for complex optimizations (must be documented).
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This Constitution supersedes all other development practices.
+- **Amendments**: Changes to these principles require a documented Architectural Decision Record (ADR) and a version bump of this Constitution.
+- **Compliance**: All Pull Requests and Code Reviews must explicitly verify compliance with these principles.
+- **Runtime Guidance**: Use the `specs/` directory for all feature definitions.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-01-07 | **Last Amended**: 2026-01-07
