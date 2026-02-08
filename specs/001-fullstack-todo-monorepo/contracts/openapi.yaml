@@ -1,0 +1,152 @@
+openapi: 3.0.3
+info:
+  title: Evolution of Todo API
+  version: 1.0.0
+  description: REST API for Todo Application with JWT Authentication.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    TaskBase:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        is_completed:
+          type: boolean
+          default: false
+    TaskCreate:
+      allOf:
+        - $ref: '#/components/schemas/TaskBase'
+    TaskUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        is_completed:
+          type: boolean
+    TaskRead:
+      allOf:
+        - $ref: '#/components/schemas/TaskBase'
+        - type: object
+          required:
+            - id
+            - user_id
+            - created_at
+            - updated_at
+          properties:
+            id:
+              type: string
+              format: uuid
+            user_id:
+              type: string
+              format: uuid
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+security:
+  - bearerAuth: []
+paths:
+  /tasks:
+    get:
+      summary: List Tasks
+      description: Retrieve all tasks belonging to the authenticated user.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskRead'
+    post:
+      summary: Create Task
+      description: Create a new task for the authenticated user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskRead'
+  /tasks/{task_id}:
+    get:
+      summary: Get Task
+      description: Retrieve a specific task by ID (must belong to user).
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskRead'
+        '404':
+          description: Not Found (or Forbidden)
+    put:
+      summary: Update Task
+      description: Update a task (must belong to user).
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskRead'
+        '404':
+          description: Not Found
+    delete:
+      summary: Delete Task
+      description: Delete a task (must belong to user).
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
