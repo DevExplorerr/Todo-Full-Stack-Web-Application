@@ -42,6 +42,7 @@ mypy_extensions==1.1.0
 numpy==2.3.5
 packaging==25.0
 passlib==1.7.4
+passlib[argon2]
 pathspec==0.12.1
 platformdirs==4.5.0
 playwright==1.57.0
