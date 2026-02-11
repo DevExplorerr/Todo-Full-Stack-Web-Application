@@ -2,8 +2,9 @@ fastapi
 uvicorn
 sqlmodel
 psycopg2-binary
-python-jose[cryptography]
-passlib[argon2]
+python-jose
+cryptography
+passlib
 argon2-cffi
 python-multipart
 pydantic
